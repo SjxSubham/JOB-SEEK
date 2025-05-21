@@ -4,9 +4,12 @@
 
 JobSeek is an intelligent job search platform that leverages AI to help users find their dream jobs more effectively. The platform provides personalized job recommendations, resume analysis, and smart matching algorithms.
 
+![job-seek](https://github.com/user-attachments/assets/90c1c310-98dc-4134-8da1-e6d8d8802a99)
+
+
 ## 🚀 Live Demo
 
-Visit our live application at: [https://job-seek-umber.vercel.app/](https://job-seek-umber.vercel.app/)
+#### Visit our live application at: [JOB-SEEK](https://job-seek-umber.vercel.app/)
 
 ## 🛠️ Tech Stack
 
