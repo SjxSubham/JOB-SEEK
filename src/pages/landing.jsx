@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
+import { PenLine, Search } from "lucide-react";
 
 const LandingPage = () => {
   return (
@@ -23,7 +24,7 @@ const LandingPage = () => {
         <h1 className="flex flex-col items-center justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
           Find Your Dream Job
           <span className="flex items-center gap-2 sm:gap-6">
-            and get
+            and get hired
             <img
               src="/giphy.gif"
               className="h-14 rounded-2xl sm:h-24 lg:h-32"
@@ -38,12 +39,12 @@ const LandingPage = () => {
       <div className="flex gap-6 justify-center">
         <Link to={"/jobs"}>
           <Button variant="blue" size="xl">
-            Find Jobs
+          <Search className="m-1 flex py-0.5" />Find Jobs
           </Button>
         </Link>
         <Link to={"/post-job"}>
-          <Button variant="destructive" size="xl">
-            Post a Job
+          <Button variant="" size="xl">
+          <PenLine className="flex m-2" color="#10b6c1" />Post a Job
           </Button>
         </Link>
       </div>

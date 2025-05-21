@@ -8,7 +8,7 @@ import {
   useUser,
 } from "@clerk/clerk-react";
 import { Button } from "./ui/button";
-import { BriefcaseBusiness, Heart, PenBox } from "lucide-react";
+import { BriefcaseBusiness, Heart, PenBox, User } from "lucide-react";
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
@@ -68,6 +68,11 @@ const Header = () => {
                   label="Saved Jobs"
                   labelIcon={<Heart size={15} />}
                   href="/saved-jobs"
+                />
+                <UserButton.Link
+                  label="Profile"
+                  labelIcon={<User size={15} />}
+                  href="/profile-page"
                 />
                 <UserButton.Action label="manageAccount" />
               </UserButton.MenuItems>

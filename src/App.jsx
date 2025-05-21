@@ -14,6 +14,7 @@ import JobPage from "./pages/job";
 
 import "./App.css";
 
+
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -70,6 +71,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // {
+      //   path: "/profile-page",
+      //   element: (
+      //     <ProtectedRoute>
+      //       <ProfilePage />
+      //     </ProtectedRoute>
+      //   ),
+      // },
     ],
   },
 ]);
