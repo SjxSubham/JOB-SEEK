@@ -16,7 +16,7 @@ const AppLayout = () => {
       Made with ❤ by <span className="text-indigo-300 font-semibold">@Sjx</span>
     </p>
     {/* <div className="bg-gray-700 bg-opacity-50 w-36  rounded-2xl"> */}
-    <Link className="flex mb-9 p-0.5 mt-2 justify-center items-center text-gray-400" to="https://github.com/SjxSubham/JOB-SEEK">
+    <Link className="flex -mb-4 p-0.5 mt-2 justify-center items-center text-gray-400" to="https://github.com/SjxSubham/JOB-SEEK">
   <Github color="#a4b5bc" strokeWidth={1} />Github
     </Link>
     {/* </div> */}
