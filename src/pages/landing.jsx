@@ -62,20 +62,20 @@ const LandingPage = () => {
               <img
                 src={path}
                 alt={name}
-                className="h-10 sm:h-14 object-contain"
+                className="h-10 sm:h-14  object-contain"
               />
             </CarouselItem>
           ))}
         </CarouselContent>
       </Carousel>
-<div className="flex flex-row gap-3">
-      <img src="/giphy.gif" className="rounded-2xl h-14 w-38 sm:h-24 lg:h-32" />
-      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
-      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
-      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
-      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
-      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
-      <img src="/giphy.gif" className="rounded-2xl h-14 w-38 sm:h-24 lg:h-32" />
+      <div className="flex flex-row gap-3">
+        <img src="/giphy.gif" className="rounded-2xl h-14 w-38 sm:h-24 lg:h-32" />
+        <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+        <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+        <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+        <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+        <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+        <img src="/giphy.gif" className="rounded-2xl h-14 w-38 sm:h-24 lg:h-32" />
       </div>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
