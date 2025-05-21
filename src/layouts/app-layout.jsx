@@ -9,9 +9,14 @@ const AppLayout = () => {
         <Header />
         <Outlet />
       </main>
-      <div className="p-10 text-center bg-gray-800 mt-10">
-        Made with 💗 by @Sjx
-      </div>
+      <div className="relative w-full mt-10">
+  <div className="backdrop-blur-md bg-white/10 border border-white/20 shadow-lg rounded-t-xl px-6 py-8 text-center">
+    <p className="text-sm sm:text-base text-white font-medium">
+      Made with ❤ by <span className="text-indigo-300 font-semibold">@Sjx</span>
+    </p>
+  </div>
+</div>
+
     </div>
   );
 };

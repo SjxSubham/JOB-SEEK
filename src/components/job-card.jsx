@@ -53,7 +53,7 @@ const JobCard = ({
   }, [savedJob]);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col hover:bg-popover hover:shadow-blue-600 shadow-sm">
       {loadingDeleteJob && (
         <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />
       )}
@@ -77,10 +77,13 @@ const JobCard = ({
             <MapPinIcon size={15} /> {job.location}
           </div>
         </div>
-        <hr />
+        <hr/>
+        <div className="font-mono">
         {job.description.substring(0, job.description.indexOf("."))}.
+        </div>
+        
       </CardContent>
-      <CardFooter className="flex gap-2">
+      <CardFooter className="flex gap-2 hover:shadow-blue-600 shadow-sm">
         <Link to={`/job/${job.id}`} className="flex-1">
           <Button variant="secondary" className="w-full">
             More Details

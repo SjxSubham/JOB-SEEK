@@ -21,13 +21,13 @@ const LandingPage = () => {
   return (
     <main className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20">
       <section className="text-center ">
-        <h1 className="flex flex-col items-center justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
+        <h1 className="flex flex-col items-center animate-slidein700 justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
           Find Your Dream Job
           <span className="flex items-center gap-2 sm:gap-6">
             and get hired
             <img
               src="/giphy.gif"
-              className="h-14 rounded-2xl sm:h-24 lg:h-32"
+              className="h-12 rounded-2xl sm:h-24 lg:h-32"
               alt="JOB seek Logo"
             />
           </span>
@@ -68,9 +68,15 @@ const LandingPage = () => {
           ))}
         </CarouselContent>
       </Carousel>
-
-      <img src="/banner.jpeg" className="w-full" />
-
+<div className="flex flex-row gap-3">
+      <img src="/giphy.gif" className="rounded-2xl h-14 w-38 sm:h-24 lg:h-32" />
+      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+      <img src="/giphy.gif" className="rounded-2xl h-14 w-48 sm:h-24 lg:h-32" />
+      <img src="/giphy.gif" className="rounded-2xl h-14 w-38 sm:h-24 lg:h-32" />
+      </div>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>

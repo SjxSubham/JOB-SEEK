@@ -61,10 +61,10 @@ const JobPage = () => {
 
       <div className="flex justify-between ">
         <div className="flex gap-2">
-          <MapPinIcon /> {job?.location}
+          <MapPinIcon className="p-0.5" /> {job?.location}
         </div>
         <div className="flex gap-2">
-          <Briefcase /> {job?.applications?.length} Applicants
+          <Briefcase className="flex p-0.5"/> {job?.applications?.length} Applicants
         </div>
         <div className="flex gap-2">
           {job?.isOpen ? (
@@ -97,10 +97,10 @@ const JobPage = () => {
         </Select>
       )}
 
-      <h2 className="text-2xl sm:text-3xl font-bold">About the job</h2>
-      <p className="sm:text-lg">{job?.description}</p>
+      <h2 className="text-2xl mt-8 sm:text-3xl font-bold"> About the job</h2>
+      <p className="sm:text-lg justify-center items-center font-mono">{job?.description}</p>
 
-      <h2 className="text-2xl sm:text-3xl font-bold">
+      <h2 className="text-2xl mt-4 sm:text-3xl font-bold">
         What we are looking for
       </h2>
       <MDEditor.Markdown

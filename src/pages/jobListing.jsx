@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { State } from "country-state-city";
-import { BarLoader } from "react-spinners";
+import { BarLoader, BeatLoader, MoonLoader, PacmanLoader } from "react-spinners";
 import useFetch from "@/hooks/use-fetch";
 
 import JobCard from "@/components/job-card";
@@ -18,6 +18,8 @@ import {
 
 import { getCompanies } from "@/api/apiCompanies";
 import { getJobs } from "@/api/apiJobs";
+import RecommendationsCard from "@/components/recommendations-card";
+// import RecommendationsCard from "@/components/recommendations-card";
 
 const JobListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,8 +75,8 @@ const JobListing = () => {
 
   return (
     <div className="">
-      <h1 className="gradient-title font-extrabold text-6xl sm:text-7xl text-center pb-8">
-        Latest Jobs
+      <h1 className="gradient-title font-extrabold  text-6xl sm:text-7xl text-center pb-8">
+        Latest  Jobs
       </h1>
       <form
         onSubmit={handleSearch}
@@ -89,6 +91,7 @@ const JobListing = () => {
         <Button type="submit" className="h-full sm:w-28" variant="blue">
           Search
         </Button>
+        
       </form>
 
       <div className="flex flex-col sm:flex-row gap-2">
@@ -138,7 +141,7 @@ const JobListing = () => {
       </div>
 
       {loadingJobs && (
-        <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />
+        <BeatLoader className="mt-4" width={"100%"} color="#36d7b7" />
       )}
 
       {loadingJobs === false && (
@@ -158,6 +161,10 @@ const JobListing = () => {
           )}
         </div>
       )}
+      {/* <div className="flex justify-center items-center p-4 m-4 "> */}
+        {/* <RecommendationsCard /> */}
+        {/* <RecommendationsCard /> */}
+        {/* </div> */}
     </div>
   );
 };
