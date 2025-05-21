@@ -1,0 +1,42 @@
+[
+  {
+    "name": "MyGithub",
+    "path": "/MyGithub.svg",
+    "id": 1
+  },
+  {
+    "name": "FeedX",
+    "path": "/image.svg",
+    "id": 2
+  },
+  {
+    "name": "ZitaCode",
+    "path": "/Image...webp",
+    "id": 3
+  },
+  {
+    "name": "ibm",
+    "path": "/companies/ibm.svg",
+    "id": 4
+  },
+  {
+    "name": "JoB SeeK",
+    "path": "/giphy.gif",
+    "id": 5
+  },
+  {
+    "name": "microsoft",
+    "path": "/companies/microsoft.webp",
+    "id": 6
+  },
+  {
+    "name": "netflix",
+    "path": "/companies/netflix.png",
+    "id": 7
+  },
+  {
+    "name": "uber",
+    "path": "/companies/uber.svg",
+    "id": 8
+  }
+]
