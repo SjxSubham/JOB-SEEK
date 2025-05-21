@@ -6,7 +6,7 @@
   },
   {
     "name": "FeedX",
-    "path": "/image.svg",
+    "path": "/image.jpg",
     "id": 2
   },
   {
@@ -17,6 +17,7 @@
   {
     "name": "ibm",
     "path": "/ibm.svg",
+    "size": "large",
     "id": 4
   },
   {
