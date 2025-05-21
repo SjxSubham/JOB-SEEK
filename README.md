@@ -23,7 +23,7 @@ JobSeek is an intelligent job search platform that leverages AI to help users fi
 - Supabase - Backend as a Service (BaaS)
   - Database
   - Authentication
-  - Real-time subscriptions
+  - RLS Policy Secured database
   - Storage
 
 <!-- ### AI Integration
