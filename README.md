@@ -163,16 +163,17 @@ headers: {
 
 ### Frontend Structure
 ```
+├── public/    # static assets
 ├── src/
 │   ├── components/     # Reusable UI components
-│   │   ├── JobCard/    # Job listing card component
-│   │   ├── AIMatches/  # AI matching feature components
-│   │   └── Filters/    # Job search filters
+│   │   ├── ui/    # Job listing card component
+│   ├── data/          # JSON Data
 │   ├── pages/         # React pages and routing
-│   ├── public/        # Static assets
+│   ├── hooks/         # fectching database.data
 │   ├── styles/        # Global styles and Tailwind config
 │   ├── utils/         # Helper functions and utilities
-│   ├── services/      # Supabase and API integration
+│   ├── api/           # Supabase and API integration
+|   ├── lib/
 │   └── types/         # TypeScript type definitions
 ├── .env.sample        # Environment variables template
 └── vite.config.ts     # Vite configuration
