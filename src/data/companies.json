@@ -26,17 +26,17 @@
   },
   {
     "name": "microsoft",
-    "path": "/companies/microsoft.webp",
+    "path": "/microsoft.webp",
     "id": 6
   },
   {
     "name": "netflix",
-    "path": "/companies/netflix.png",
+    "path": "/netflix.jpg",
     "id": 7
   },
   {
     "name": "uber",
-    "path": "/companies/uber.svg",
+    "path": "/uber.jpg",
     "id": 8
   }
 ]

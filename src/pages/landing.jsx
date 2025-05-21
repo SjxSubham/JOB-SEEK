@@ -15,7 +15,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
-import { PenLine, Search } from "lucide-react";
+import {  PenLine, Search } from "lucide-react";
 
 const LandingPage = () => {
   return (
@@ -62,7 +62,7 @@ const LandingPage = () => {
               <img
                 src={path}
                 alt={name}
-                className="h-9 sm:h-14 object-contain"
+                className="h-10 sm:h-14 object-contain"
               />
             </CarouselItem>
           ))}
