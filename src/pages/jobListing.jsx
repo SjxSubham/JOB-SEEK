@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { State } from "country-state-city";
-import { BarLoader, BeatLoader, MoonLoader, PacmanLoader } from "react-spinners";
+import { BarLoader, BeatLoader } from "react-spinners";
 import useFetch from "@/hooks/use-fetch";
 
 import JobCard from "@/components/job-card";
@@ -18,7 +18,7 @@ import {
 
 import { getCompanies } from "@/api/apiCompanies";
 import { getJobs } from "@/api/apiJobs";
-import RecommendationsCard from "@/components/recommendations-card";
+
 // import RecommendationsCard from "@/components/recommendations-card";
 
 const JobListing = () => {
