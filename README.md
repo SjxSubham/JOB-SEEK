@@ -36,7 +36,7 @@ JobSeek is an intelligent job search platform that leverages AI to help users fi
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/SjxSubham/JOB-SEEK
 
 ```
 
