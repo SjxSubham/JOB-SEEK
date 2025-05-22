@@ -11,7 +11,7 @@ const AppLayout = () => {
         <Outlet />
       </main>
       <div className="relative w-full mt-10">
-  <div className="backdrop-blur-md bg-white/10 border border-white/20 shadow-lg rounded-t-xl px-6 py-8 ">
+  <div className="backdrop-blur-md bg-transparent border-t-4 border-white/10 shadow-lg rounded-t-xl px-6 py-8 ">
     <p className="text-sm sm:text-base text-white font-medium text-center">
       Made with ❤ by <span className="text-indigo-300 font-semibold">@Sjx</span>
     </p>

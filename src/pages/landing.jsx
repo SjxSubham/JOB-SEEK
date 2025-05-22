@@ -78,7 +78,7 @@ const LandingPage = () => {
         <img src="/giphy.gif" className="rounded-2xl h-14 w-38 sm:h-24 lg:h-32" />
       </div>
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
+        <Card className="hover:shadow-blue-400 shadow-sm hover:animate-pulse">
           <CardHeader>
             <CardTitle className="font-bold">For Job Seekers</CardTitle>
           </CardHeader>
@@ -86,7 +86,7 @@ const LandingPage = () => {
             Search and apply for jobs, track applications, and more.
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-blue-400 shadow-sm hover:animate-pulse">
           <CardHeader>
             <CardTitle className="font-bold">For Employers</CardTitle>
           </CardHeader>
