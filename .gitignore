@@ -13,6 +13,11 @@ dist-ssr
 *.local
 .env
 
+# files
+profile-page.jsx
+apiProfile.js
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
