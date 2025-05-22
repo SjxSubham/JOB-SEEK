@@ -16,7 +16,7 @@ dist-ssr
 # files
 profile-page.jsx
 apiProfile.js
-
+apiRecommendations.js
 
 # Editor directories and files
 .vscode/*

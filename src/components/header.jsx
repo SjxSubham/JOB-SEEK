@@ -36,7 +36,7 @@ const Header = () => {
           {/* <img src="/giphy.gif" className="h-16" alt="Hirrd Logo" /> */}
           
           
-        <h1 className="mb-4 rounded-lg animate-pulse bg-transparent bg-gradient-to-tr from-violet-600 via-blue-500  to-blue-200 text-transparent bg-clip-text flex font-serif font-thin gap-2 text-2xl"><PenBox color="#25abe4" className="flex mt-1 mb-9 rounded-bl-2xl" />JOB-SEEK</h1>
+        <h1 className=" rounded-lg animate-pulse bg-transparent bg-gradient-to-tr from-violet-600 via-blue-500  to-blue-200 text-transparent bg-clip-text flex font-serif font-thin gap-3 text-2xl"><PenBox color="#25abe4" className="flex mt-1 mb-9 rounded-bl-2xl" />JOB-SEEK</h1>
         </Link>
 
         <div className="flex gap-8">
