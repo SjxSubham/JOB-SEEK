@@ -4,9 +4,12 @@
 
 JobSeek is an intelligent job search platform that leverages AI to help users find their dream jobs more effectively. The platform provides personalized job recommendations, resume analysis, and smart matching algorithms.
 
+![job-seek](https://github.com/user-attachments/assets/90c1c310-98dc-4134-8da1-e6d8d8802a99)
+
+
 ## 🚀 Live Demo
 
-Visit our live application at: [https://job-seek-umber.vercel.app/](https://job-seek-umber.vercel.app/)
+#### Visit our live application at: [JOB-SEEK](https://job-seek-umber.vercel.app/)
 
 ## 🛠️ Tech Stack
 
@@ -20,7 +23,7 @@ Visit our live application at: [https://job-seek-umber.vercel.app/](https://job-
 - Supabase - Backend as a Service (BaaS)
   - Database
   - Authentication
-  - Real-time subscriptions
+  - RLS Policy Secured database
   - Storage
 
 <!-- ### AI Integration
@@ -34,7 +37,7 @@ Visit our live application at: [https://job-seek-umber.vercel.app/](https://job-
 1. Clone the repository:
 ```bash
 git clone [repository-url]
-cd frontend
+
 ```
 
 2. Install dependencies:
@@ -67,7 +70,7 @@ npm preview
 
 ### AI Job Recommendation Feature
 
-The AI Job Recommendation feature uses the Mistral-7B-Instruct-v0.2 model from Hugging Face to provide personalized job matches based on user profiles. Here's how it works:
+The AI Job Recommendation feature uses the Mistral-7B-Instruct-v0.2 model from Hugging Face to provide personalized job matches based on user profiles. Here's how it works: (work is still going on...)
 
 ### Frontend Implementation
 - Located in `src/components/AIJobRecommendation.tsx`
@@ -128,6 +131,7 @@ headers: {
 
 ### Endpoints
 
+
 #### Jobs
 
 - `GET /api/jobs` - Get all jobs
@@ -152,21 +156,24 @@ headers: {
 - `POST /api/users/saved-jobs/:jobId` - Save a job
 - `DELETE /api/users/saved-jobs/:jobId` - Remove a saved job
 
+### RESTful endpoint for querying and managing your database
+#### URL - https://wzmpiaqjnegnitfnahue.supabase.co
+
 ## 🏗️ Code Architecture
 
 ### Frontend Structure
 ```
-frontend/
+├── public/    # static assets
 ├── src/
 │   ├── components/     # Reusable UI components
-│   │   ├── JobCard/    # Job listing card component
-│   │   ├── AIMatches/  # AI matching feature components
-│   │   └── Filters/    # Job search filters
+│   │   ├── ui/    # Job listing card component
+│   ├── data/          # JSON Data
 │   ├── pages/         # React pages and routing
-│   ├── public/        # Static assets
+│   ├── hooks/         # fectching database.data
 │   ├── styles/        # Global styles and Tailwind config
 │   ├── utils/         # Helper functions and utilities
-│   ├── services/      # Supabase and API integration
+│   ├── api/           # Supabase and API integration
+|   ├── lib/
 │   └── types/         # TypeScript type definitions
 ├── .env.sample        # Environment variables template
 └── vite.config.ts     # Vite configuration
@@ -175,11 +182,10 @@ frontend/
 ### Key Technologies
 - React.js (Vite) for fast development and building
 - Supabase for backend services and database
-- Clerk for secure authentication
-- Tailwind CSS for styling
+- Clerk with JWT for secure authentication
+- Tailwind CSS for styling (clean and responsive UI )
 - Zod for runtime type checking and validation
-- TypeScript for type safety
-- Hugging Face Mistral-7B for AI job matching
+
 
 ## ⚖️ Trade-offs and Assumptions
 
@@ -217,6 +223,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
 
-## 📧 Contact
+## 📧 [Feedback](https://feed-x-widget.vercel.app/?projectId=29&projectName=JOB-SEEK)
 
-For support or inquiries, please reach out to [your-email@example.com]
+For support or inquiries, Feedback please reach out to - [https://feed-x-widget.vercel.app/?projectId=29&projectName=JOB-SEEK]
