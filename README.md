@@ -36,7 +36,7 @@ JobSeek is an intelligent job search platform that leverages AI to help users fi
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/SjxSubham/JOB-SEEK
 
 ```
 
@@ -225,4 +225,4 @@ Contributions are welcome! Please read our contributing guidelines before submit
 
 ## 📧 [Feedback](https://feed-x-widget.vercel.app/?projectId=29&projectName=JOB-SEEK)
 
-For support or inquiries, Feedback please reach out to - [https://feed-x-widget.vercel.app/?projectId=29&projectName=JOB-SEEK]
+For support or inquiries, Feedback please reach out to - [Here](https://feed-x-widget.vercel.app/?projectId=29&projectName=JOB-SEEK)
