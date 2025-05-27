@@ -16,13 +16,15 @@ import {
 } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
 import {  PenLine, Search } from "lucide-react";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 
 const LandingPage = () => {
+  const words = "Find Your Dream Job";
   return (
     <main className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20">
       <section className="text-center ">
-        <h1 className="flex flex-col items-center animate-slidein700 justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
-          Find Your Dream Job
+        <h1 className="flex flex-col items-center  justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
+          <TextGenerateEffect words={words}/>
           <span className="flex items-center gap-2 sm:gap-6">
           <img
               src="/giphy.gif"
