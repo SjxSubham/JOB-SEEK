@@ -23,14 +23,16 @@ const LandingPage = () => {
   return (
     <main className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20">
       <section className="text-center ">
-        <h1 className="flex flex-col items-center  justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
+        
           <TextGenerateEffect words={words}/>
+          <h1 className="flex flex-col items-center  justify-center gradient-title font-extrabold text-4xl sm:text-6xl lg:text-8xl tracking-tighter py-4">
           <span className="flex items-center gap-2 sm:gap-6">
           <img
               src="/giphy.gif"
               className="h-12 rounded-2xl sm:h-24 lg:h-32"
               alt="JOB seek Logo"
             />
+            
             and get hired
             <img
               src="/giphy.gif"
