@@ -17,6 +17,8 @@ import {
 import { Link } from "react-router-dom";
 import {  PenLine, Search } from "lucide-react";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import TextType from "@/components/ui/TextType";
+
 
 const LandingPage = () => {
   const words = "Find Your Dream Job";
@@ -33,7 +35,14 @@ const LandingPage = () => {
               alt="JOB seek Logo"
             />
             
-            and get hired
+            and get
+            <TextType 
+  text={[" Hired"]}
+  typingSpeed={100}
+  pauseDuration={1500}
+  showCursor={true}
+  cursorCharacter="!"
+/>
             <img
               src="/giphy.gif"
               className="h-12 rounded-2xl sm:h-24 lg:h-32"
