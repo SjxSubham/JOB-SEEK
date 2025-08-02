@@ -41,7 +41,7 @@ const LandingPage = () => {
   typingSpeed={100}
   pauseDuration={1500}
   showCursor={true}
-  cursorCharacter="!"
+  cursorCharacter="|"
 />
             <img
               src="/giphy.gif"
