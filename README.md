@@ -179,6 +179,215 @@ headers: {
 └── vite.config.ts     # Vite configuration
 ```
 
+### Complete Project File Structure
+
+```
+JOB-SEEK/
+├── 📁 public/                    # Static assets
+│   ├── 🖼️ vite.svg
+│   └── 📄 index.html
+├── 📁 src/                       # Source code
+│   ├── 📁 api/                   # Supabase API integration layer
+│   │   ├── 🔧 apiJobs.js         # Job CRUD operations
+│   │   ├── 🔧 apiApplication.js  # Application management
+│   │   └── 🔧 apiCompanies.js    # Company data operations
+│   ├── 📁 components/            # Reusable UI components
+│   │   ├── 📁 ui/                # Base UI components
+│   │   ├── 🧩 header.jsx         # Navigation header
+│   │   ├── 🔒 protected-route.jsx # Route protection
+│   │   └── 🎨 theme-provider.jsx # Theme management
+│   ├── 📁 data/                  # Static JSON data
+│   │   ├── 📊 companies.json     # Company listings
+│   │   └── ❓ faq.json           # FAQ content
+│   ├── 📁 hooks/                 # Custom React hooks
+│   │   └── 🎣 use-fetch.js       # Data fetching hook
+│   ├── 📁 layouts/               # Layout components
+│   │   └── 📐 app-layout.jsx     # Main app layout
+│   ├── 📁 lib/                   # Utility libraries
+│   ├── 📁 pages/                 # React pages/routes
+│   │   ├── 🏠 landing.jsx        # Landing page
+│   │   ├── 👤 onboarding.jsx     # User onboarding
+│   │   ├── 📋 jobListing.jsx     # Job listings
+│   │   ├── 📄 job.jsx            # Job details
+│   │   ├── ➕ post-job.jsx       # Job posting
+│   │   ├── 💼 my-jobs.jsx        # Recruiter jobs
+│   │   └── ⭐ saved-jobs.jsx     # Saved jobs
+│   ├── 📁 utils/                 # Helper utilities
+│   │   └── 🔌 supabase.js        # Supabase client config
+│   ├── 🎨 App.css               # Global styles
+│   ├── ⚛️ App.jsx               # Main App component
+│   ├── 🎨 index.css             # Base styles
+│   └── 🚀 main.jsx              # App entry point
+├── 📄 .env.sample               # Environment variables template
+├── 📄 .gitignore               # Git ignore rules
+├── 📄 components.json          # shadcn/ui config
+├── 📄 eslint.config.js         # ESLint configuration
+├── 📄 jsconfig.json            # JavaScript config
+├── 📄 package.json             # Dependencies & scripts
+├── 📄 postcss.config.js        # PostCSS config
+├── 📄 README.md                # Project documentation
+├── 📄 tailwind.config.js       # Tailwind CSS config
+├── 📄 vercel.json              # Vercel deployment config
+└── 📄 vite.config.js           # Vite build config
+```
+
+### Client-Server Architecture & Data Flow
+
+```mermaid
+graph TB
+    subgraph "🖥️ CLIENT (Frontend)"
+        A[⚛️ React App<br/>Vite + Tailwind]
+        B[🎣 Custom Hooks<br/>use-fetch.js]
+        C[🔧 API Layer<br/>apiJobs, apiApplication, apiCompanies]
+        D[🔒 Authentication<br/>Clerk JWT]
+        E[📱 UI Components<br/>Pages & Layouts]
+    end
+    
+    subgraph "☁️ BACKEND SERVICES"
+        F[🔐 Clerk Auth Service<br/>User Management & JWT]
+        G[🗄️ Supabase Backend<br/>Database + Storage + Auth]
+        H[🤖 AI Services<br/>Hugging Face API]
+    end
+    
+    subgraph "💾 DATABASE LAYER"
+        I[📊 PostgreSQL Database<br/>Jobs, Companies, Applications]
+        J[📁 File Storage<br/>Resumes & Company Logos]
+        K[🔐 RLS Policies<br/>Row Level Security]
+    end
+
+    %% Client Flow
+    E --> B
+    B --> C
+    C --> D
+    
+    %% Authentication Flow
+    A -.->|Sign In/Up| F
+    F -.->|JWT Token| D
+    D -->|Authenticated Requests| G
+    
+    %% Data Flow
+    C -->|CRUD Operations| G
+    G --> I
+    G --> J
+    I --> K
+    
+    %% AI Integration
+    C -.->|Job Matching| H
+    H -.->|AI Recommendations| C
+    
+    %% Styling
+    classDef client fill:#e1f5fe
+    classDef backend fill:#f3e5f5
+    classDef database fill:#e8f5e8
+    classDef auth fill:#fff3e0
+    
+    class A,B,C,E client
+    class F,G,H backend
+    class I,J,K database
+    class D auth
+```
+
+### Data Flow Diagram
+
+```mermaid
+sequenceDiagram
+    participant User as 👤 User
+    participant React as ⚛️ React App
+    participant Clerk as 🔐 Clerk Auth
+    participant Hooks as 🎣 Custom Hooks
+    participant API as 🔧 API Layer
+    participant Supabase as 🗄️ Supabase
+    participant DB as 💾 Database
+
+    %% Authentication Flow
+    User->>React: Access Protected Route
+    React->>Clerk: Check Authentication
+    Clerk-->>React: Return JWT Token
+    
+    %% Data Fetching Flow
+    React->>Hooks: Trigger Data Fetch
+    Hooks->>Clerk: Get Session Token
+    Clerk-->>Hooks: JWT Token
+    Hooks->>API: Call API Function with Token
+    API->>Supabase: Authenticated Request
+    Supabase->>DB: Query Database
+    DB-->>Supabase: Return Data
+    Supabase-->>API: Response Data
+    API-->>Hooks: Processed Data
+    Hooks-->>React: Update State
+    React-->>User: Display Content
+
+    %% File Upload Flow (Resume/Logo)
+    User->>React: Upload File
+    React->>API: Upload Request
+    API->>Supabase: Store in Bucket
+    Supabase-->>API: File URL
+    API->>Supabase: Save URL to Database
+    Supabase-->>API: Success Response
+    API-->>React: Upload Complete
+    React-->>User: Show Success
+```
+
+### Component Communication Flow
+
+```mermaid
+graph LR
+    subgraph "📱 User Interface"
+        A[🏠 Landing Page]
+        B[📋 Job Listings]
+        C[📄 Job Details]
+        D[➕ Post Job]
+        E[💼 My Jobs]
+        F[⭐ Saved Jobs]
+    end
+    
+    subgraph "🎣 Data Management"
+        G[use-fetch Hook]
+        H[useState/useEffect]
+    end
+    
+    subgraph "🔧 API Integration"
+        I[apiJobs.js]
+        J[apiApplication.js]
+        K[apiCompanies.js]
+    end
+    
+    subgraph "🗄️ Backend"
+        L[Supabase Client]
+        M[Database Tables]
+        N[File Storage]
+    end
+
+    A --> G
+    B --> G
+    C --> G
+    D --> G
+    E --> G
+    F --> G
+    
+    G --> H
+    G --> I
+    G --> J
+    G --> K
+    
+    I --> L
+    J --> L
+    K --> L
+    
+    L --> M
+    L --> N
+    
+    classDef ui fill:#e3f2fd
+    classDef data fill:#f1f8e9
+    classDef api fill:#fff8e1
+    classDef backend fill:#fce4ec
+    
+    class A,B,C,D,E,F ui
+    class G,H data
+    class I,J,K api
+    class L,M,N backend
+```
+
 ### Key Technologies
 - React.js (Vite) for fast development and building
 - Supabase for backend services and database
@@ -186,6 +395,62 @@ headers: {
 - Tailwind CSS for styling (clean and responsive UI )
 - Zod for runtime type checking and validation
 
+## 🔄 Working Features & Data Flow Patterns
+
+### 1. Authentication Flow
+```
+User Login → Clerk Authentication → JWT Token → Supabase RLS → Database Access
+```
+
+### 2. Job Search & Listing
+```
+Search Input → API Filter → Supabase Query → Database → Filtered Results → UI Display
+```
+
+### 3. Job Application Process
+```
+Apply Button → Resume Upload → File Storage → Application Record → Database → Email Notification
+```
+
+### 4. Job Posting (Recruiter)
+```
+Job Form → Validation → Company Logo Upload → Job Creation → Database → Live Listing
+```
+
+### 5. Save/Unsave Jobs
+```
+Save Action → Check Auth → Toggle Saved State → Database Update → UI Refresh
+```
+
+### 6. Real-time Features
+- **Live Job Updates**: Supabase real-time subscriptions
+- **Application Status**: Real-time status changes
+- **New Job Notifications**: Instant updates when jobs match criteria
+
+### 7. File Management
+```
+File Upload → Supabase Storage → URL Generation → Database Reference → Display/Download
+```
+
+### 8. Role-based Access Control
+```mermaid
+graph TD
+    A[User Login] --> B{Role Check}
+    B -->|Candidate| C[Job Search, Apply, Save Jobs]
+    B -->|Recruiter| D[Post Jobs, Manage Applications]
+    B -->|No Role| E[Onboarding Process]
+    E --> F[Select Role] --> B
+```
+
+### 9. Data Validation Flow
+```
+Form Input → Zod Schema → Client Validation → API Request → Server Validation → Database
+```
+
+### 10. Error Handling Pattern
+```
+API Request → Error Check → User-friendly Message → Fallback UI → Retry Mechanism
+```
 
 ## ⚖️ Trade-offs and Assumptions
 
@@ -214,6 +479,51 @@ headers: {
    - Resume data is in supported formats
    - Data validation through Zod schemas
    - AI model responses are reliable
+
+## 📋 Quick Reference
+
+### Key File Locations
+| Component | File Path | Purpose |
+|-----------|-----------|---------|
+| 🔧 API Layer | `src/api/` | Supabase integration functions |
+| 🎣 Data Hooks | `src/hooks/use-fetch.js` | Custom data fetching logic |
+| 🔌 Supabase Config | `src/utils/supabase.js` | Database client setup |
+| 🚪 Routing | `src/App.jsx` | React Router configuration |
+| 🔒 Auth Guard | `src/components/protected-route.jsx` | Route protection logic |
+| 📱 Pages | `src/pages/` | Main application views |
+| 🎨 Components | `src/components/` | Reusable UI elements |
+
+### Environment Variables
+```bash
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+VITE_HUGGINGFACE_API_TOKEN=your_huggingface_token
+JWT_ISSUER_DOMAIN=your_jwt_issuer_domain
+```
+
+### Development Commands
+```bash
+npm install          # Install dependencies
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
+
+### Database Schema Overview
+```
+📊 Tables:
+├── users          # User profiles and roles
+├── companies      # Company information
+├── jobs          # Job listings
+├── applications  # Job applications
+└── saved_jobs    # User saved jobs
+
+🗂️ Storage Buckets:
+├── resumes       # PDF resume files
+└── company-logo  # Company logo images
+```
 
 ## 📝 License
 
