@@ -231,6 +231,7 @@ JOB-SEEK/
 └── 📄 vite.config.js           # Vite build config
 ```
 
+
 ### Client-Server Architecture & Data Flow
 
 ```mermaid
