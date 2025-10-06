@@ -8,7 +8,9 @@ jobs:
   hacktoberfest-validation:
     runs-on: ubuntu-latest
     # Only run during Hacktoberfest period (October)
-    if: github.event.pull_request.created_at >= '2025-10-01T00:00:00Z' && github.event.pull_request.created_at <= '2025-10-31T23:59:59Z'
+    if: |
+      github.event.pull_request.created_at >= '2024-10-01T00:00:00Z' && 
+      github.event.pull_request.created_at <= '2024-10-31T23:59:59Z'
     
     permissions:
       pull-requests: write
