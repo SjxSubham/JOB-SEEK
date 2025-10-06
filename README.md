@@ -158,7 +158,7 @@ headers: {
 
 ### RESTful endpoint for querying and managing your database
 #### URL - https://wzmpiaqjnegnitfnahue.supabase.co
-
+### Diagrams and workflows
 ## 🏗️ Code Architecture
 
 ### Frontend Structure
