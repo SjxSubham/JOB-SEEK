@@ -1,19 +1,19 @@
 documentation:
-  patterns:
-    - '**/*.md'
-    - '**/*.rst'
-    - '**/*.txt'
-    - 'docs/**/*'
+  - patterns:
+      - '**/*.md'
+      - '**/*.rst'
+      - '**/*.txt'
+      - 'docs/**/*'
 
 readme-changes:
-  patterns:
-    - 'README.md'
-    - 'README.rst'
-    - 'README.txt'
-    - 'readme.md'
+  - patterns:
+      - 'README.md'
+      - 'README.rst'
+      - 'README.txt'
+      - 'readme.md'
 
 contributors:
-  patterns:
-    - 'CONTRIBUTORS.md'
-    - 'CONTRIBUTORS.txt'
-    - '.all-contributorsrc'
+  - patterns:
+      - 'CONTRIBUTORS.md'
+      - 'CONTRIBUTORS.txt'
+      - '.all-contributorsrc'
