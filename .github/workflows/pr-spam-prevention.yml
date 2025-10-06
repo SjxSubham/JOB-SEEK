@@ -18,12 +18,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get PR files
-        id: pr_files
+      - name: Analyze PR content for spam patterns
+        id: spam_check
         uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            // Get PR files
             const { data: files } = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -40,24 +41,6 @@ jobs:
                fileNames[0].toLowerCase() === 'readme.txt' ||
                fileNames[0].toLowerCase() === 'contributors.md');
             
-            // Get the patch/diff content
-            const patches = files.map(f => f.patch || '').join('\n');
-            
-            core.setOutput('only_readme', onlyReadme);
-            core.setOutput('changed_files', changedFiles);
-            core.setOutput('file_names', fileNames.join(', '));
-            core.setOutput('patches', patches);
-            
-            return { onlyReadme, changedFiles, fileNames, patches };
-
-      - name: Analyze PR content for spam patterns
-        id: spam_check
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const onlyReadme = '${{ steps.pr_files.outputs.only_readme }}' === 'true';
-            const patches = `${{ steps.pr_files.outputs.patches }}`;
             const prBody = context.payload.pull_request.body || '';
             const prTitle = context.payload.pull_request.title || '';
             
@@ -66,6 +49,8 @@ jobs:
             
             // Pattern 1: Only README modified
             if (onlyReadme) {
+              // Get the patch/diff content directly from API
+              const patches = files.map(f => f.patch || '').join('\n');
               
               // Check for common spam patterns in the diff
               const spamPatterns = [
@@ -125,7 +110,7 @@ jobs:
               }
             }
             
-            core.setOutput('is_spam', isSpam);
+            core.setOutput('is_spam', isSpam.toString());
             core.setOutput('spam_reasons', spamReasons.join('; '));
             
             return { isSpam, spamReasons };
@@ -136,7 +121,7 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const spamReasons = `${{ steps.spam_check.outputs.spam_reasons }}`;
+            const spamReasons = '${{ steps.spam_check.outputs.spam_reasons }}';
             const prNumber = context.issue.number;
             const prAuthor = context.payload.pull_request.user.login;
             
