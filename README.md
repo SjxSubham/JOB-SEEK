@@ -19,6 +19,8 @@ JobSeek is an intelligent job search platform that leverages AI to help users fi
 - Clerk - Authentication and user management
 - Zod - TypeScript-first schema validation
 
+Subham Mondal
+
 ### Backend
 - Supabase - Backend as a Service (BaaS)
   - Database
