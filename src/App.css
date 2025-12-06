@@ -1,0 +1,298 @@
+:root {
+    color-scheme: dark;
+    --app-canvas: #050611;
+    --app-canvas-gradient:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(56, 189, 248, 0.16),
+            transparent 45%
+        ),
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(167, 139, 250, 0.14),
+            transparent 42%
+        ),
+        radial-gradient(
+            circle at 50% 82%,
+            rgba(59, 130, 246, 0.2),
+            transparent 48%
+        );
+    --app-aurora-a: rgba(59, 130, 246, 0.4);
+    --app-aurora-b: rgba(125, 211, 252, 0.24);
+    --app-aurora-c: rgba(192, 132, 252, 0.26);
+    --app-grid-line: rgba(255, 255, 255, 0.035);
+    --app-grid-highlight: rgba(255, 255, 255, 0.08);
+    --app-noise-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M0 0h12v12H0z'/%3E%3Cpath d='M60 60h12v12H60z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    --app-glass-bg: rgba(10, 18, 35, 0.74);
+    --app-glass-border: rgba(148, 163, 184, 0.18);
+    --app-glass-highlight: rgba(255, 255, 255, 0.08);
+    --app-glass-shadow:
+        0 26px 64px -38px rgba(6, 12, 28, 0.9),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --app-glass-filter: saturate(165%) blur(22px);
+    --app-accent-glow: rgba(56, 189, 248, 0.4);
+    --app-heading-shadow: 0 10px 38px rgba(5, 12, 30, 0.82);
+}
+
+:where(.app-bg-canvas) {
+    position: relative;
+    min-height: 100vh;
+    background-color: var(--app-canvas);
+    background-image: var(--app-canvas-gradient);
+    background-attachment: fixed;
+    color: hsl(var(--foreground, 210 40% 98%));
+    overflow: hidden;
+    isolation: isolate;
+}
+
+:where(.app-bg-canvas)::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(56, 189, 248, 0.22),
+            transparent 55%
+        ),
+        radial-gradient(
+            circle at 0% 100%,
+            rgba(192, 132, 252, 0.18),
+            transparent 52%
+        ),
+        radial-gradient(
+            circle at 100% 85%,
+            rgba(45, 212, 191, 0.15),
+            transparent 45%
+        );
+    filter: blur(60px);
+    opacity: 0.85;
+    z-index: -2;
+}
+
+:where(.app-bg-canvas)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--app-noise-pattern);
+    opacity: 0.52;
+    mix-blend-mode: soft-light;
+    animation: app-grain-shift 7s steps(7) infinite;
+    z-index: -1;
+}
+
+:where(.app-bg-aurora, .grid-background) {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -3;
+    overflow: hidden;
+    display: block;
+    transform: translateZ(0);
+}
+
+:where(.app-bg-aurora, .grid-background)::before {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    background: conic-gradient(
+        from 90deg,
+        transparent 0deg,
+        var(--app-aurora-a) 90deg,
+        transparent 180deg,
+        var(--app-aurora-c) 270deg,
+        transparent 360deg
+    );
+    filter: blur(140px);
+    opacity: 0.55;
+    animation: app-aurora-drift 32s linear infinite;
+}
+
+:where(.app-bg-grid, .grid-background)::after {
+    content: "";
+    position: absolute;
+    inset: -22%;
+    background-image:
+        linear-gradient(transparent 0 75%, var(--app-grid-highlight) 78%),
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 48px,
+            var(--app-grid-line) 48px 49px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent 0 48px,
+            var(--app-grid-line) 48px 49px
+        ),
+        var(--app-noise-pattern);
+    background-size:
+        auto,
+        auto,
+        auto,
+        140px 140px;
+    opacity: 0.35;
+    mix-blend-mode: screen;
+    animation: app-grid-pan 48s linear infinite;
+}
+
+:where(.app-glass-shell, main.container) {
+    position: relative;
+    width: 100%;
+    max-width: min(1280px, 90vw);
+    margin-inline: auto;
+    padding-inline: clamp(1.5rem, 2vw + 1rem, 3.25rem);
+    padding-block: clamp(2.3rem, 3vw + 1.8rem, 4rem);
+    border-radius: clamp(20px, 4vw, 32px);
+    background: var(--app-glass-bg);
+    backdrop-filter: var(--app-glass-filter);
+    -webkit-backdrop-filter: var(--app-glass-filter);
+    border: 1px solid var(--app-glass-border);
+    box-shadow: var(--app-glass-shadow);
+    isolation: isolate;
+}
+
+:where(.app-glass-shell, main.container)::before,
+:where(.app-glass-shell, main.container)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+}
+
+:where(.app-glass-shell, main.container)::before {
+    background: linear-gradient(
+        140deg,
+        rgba(56, 189, 248, 0.18) 0%,
+        transparent 35%,
+        rgba(192, 132, 252, 0.1) 72%,
+        transparent 100%
+    );
+    opacity: 0.65;
+}
+
+:where(.app-glass-shell, main.container)::after {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    mix-blend-mode: overlay;
+    opacity: 0.5;
+}
+
+:where(.app-gradient-text, .gradient-title) {
+    background-image: linear-gradient(
+        120deg,
+        #38bdf8,
+        #c084fc,
+        #5eead4,
+        #38bdf8
+    );
+    background-size: 200% 200%;
+    animation: app-gradient-shift 12s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: var(--app-heading-shadow);
+}
+
+:where(.app-button-glow) {
+    position: relative;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 22px 48px -28px var(--app-accent-glow);
+    transform: translateZ(0);
+}
+
+:where(.app-button-glow)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at 25% 25%,
+        rgba(255, 255, 255, 0.32),
+        transparent 55%
+    );
+    opacity: 0;
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+}
+
+:where(.app-button-glow:hover)::after,
+:where(.app-button-glow:focus-visible)::after {
+    opacity: 1;
+    transform: translateY(-6%);
+}
+
+@media (max-width: 768px) {
+    :where(.app-glass-shell, main.container) {
+        padding-inline: clamp(1.25rem, 4vw, 1.75rem);
+        padding-block: clamp(1.8rem, 5vw, 2.6rem);
+        border-radius: clamp(18px, 6vw, 26px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(.app-bg-canvas)::after,
+    :where(.app-bg-aurora, .grid-background)::before,
+    :where(.app-bg-grid, .grid-background)::after,
+    :where(.app-gradient-text, .gradient-title) {
+        animation: none;
+    }
+}
+
+@keyframes app-aurora-drift {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.08);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+@keyframes app-grid-pan {
+    0% {
+        transform: translate3d(-5%, -5%, 0) scale(1.03);
+    }
+    50% {
+        transform: translate3d(5%, 5%, 0) scale(0.97);
+    }
+    100% {
+        transform: translate3d(-5%, -5%, 0) scale(1.03);
+    }
+}
+
+@keyframes app-gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes app-grain-shift {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+    20% {
+        transform: translate3d(-2%, -1%, 0);
+    }
+    40% {
+        transform: translate3d(1%, 2%, 0);
+    }
+    60% {
+        transform: translate3d(-1%, 1%, 0);
+    }
+    80% {
+        transform: translate3d(2%, -2%, 0);
+    }
+}
