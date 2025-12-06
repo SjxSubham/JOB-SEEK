@@ -32,13 +32,13 @@ import faqs from "@/data/faq.json";
 const metrics = [
   {
     label: "Active roles curated weekly",
-    value: "18k+",
+    value: "Still counting++", //18k
     icon: Radar,
     accent: "from-sky-400/40 to-sky-600/20",
   },
   {
     label: "Candidates hired through Job-Seek",
-    value: "42k",
+    value: "Still counting++", //42k
     icon: Users2,
     accent: "from-emerald-400/40 to-teal-500/20",
   },
