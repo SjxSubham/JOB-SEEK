@@ -120,7 +120,7 @@ VITE_HUGGINGFACE_API_KEY=your_api_key_here
 
 ### Authentication
 
-The platform uses Clerk for authentication. To access protected endpoints, include the session token in the request headers (modify youself as per the requirements):
+The platform uses Clerk for authentication. To access protected endpoints, include the session token in the request headers:
 
 ```javascript
 headers: {
@@ -158,7 +158,7 @@ headers: {
 
 ### RESTful endpoint for querying and managing your database
 #### URL - https://wzmpiaqjnegnitfnahue.supabase.co
-### Diagrams and workflows
+
 ## 🏗️ Code Architecture
 
 ### Frontend Structure
@@ -231,7 +231,6 @@ JOB-SEEK/
 └── 📄 vite.config.js           # Vite build config
 ```
 
-
 ### Client-Server Architecture & Data Flow
 
 ```mermaid
@@ -281,24 +280,7 @@ graph TB
     classDef backend fill:#f3e5f5
     classDef database fill:#e8f5e8
     classDef auth fill:#fff3e0
-
- %% Styling for Frontend nodes
-    style A color:#E63946
-    style B color:#457B9D
-    style C color:#1D3557
-    style D color:#073B4C
-    style E color:#A8DADC
     
-    %% Styling for Backend nodes
-    style F color:#FF6B6B
-    style G color:#4ECDC4
-    style H color:#FFA69E
-    
-    %% Styling for Database nodes
-    style I color:#06D6A0
-    style J color:#FFD166
-    style K color:#073B4C
-
     class A,B,C,E client
     class F,G,H backend
     class I,J,K database
@@ -394,27 +376,7 @@ graph LR
     
     L --> M
     L --> N
-
-     %% Styling for Frontend nodes
-    style A color:#E63946
-    style B color:#457B9D
-    style C color:#1D3557
-    style D color:#F1FAEE
-    style E color:#A8DADC
     
-    %% Styling for Backend nodes
-    style F color:#FF6B6B
-    style G color:#4ECDC4
-    style H color:#FFA69E
-    
-    %% Styling for Database nodes
-    style I color:#06D6A0
-    style J color:#FFD166
-    style K color:#073B4C
-    style L color:#FF6B6B
-    style M color:#4ECDC4
-    style N color:#FFA69E
-
     classDef ui fill:#e3f2fd
     classDef data fill:#f1f8e9
     classDef api fill:#fff8e1
