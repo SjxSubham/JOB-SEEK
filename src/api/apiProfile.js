@@ -7,6 +7,7 @@ import supabaseClient, { supabaseUrl } from "@/utils/supabase";
  * @returns {Promise<boolean>} True if profile exists
  */
 export async function checkProfileExists(token, user_id) {
+  // console.log("Checking if profile exists for user:", user_id);
   const supabase = await supabaseClient(token);
   const { data, error } = await supabase
     .from("profiles")
@@ -16,10 +17,16 @@ export async function checkProfileExists(token, user_id) {
 
   if (error && error.code !== "PGRST116") {
     // Ignore "No rows found" error
-    console.error("Error checking profile:", error);
+    console.error(
+      "Error checking profile:",
+      error.message,
+      error.code,
+      error.details,
+    );
     return false;
   }
 
+  console.log("Profile exists check result:", !!data);
   return !!data;
 }
 
@@ -31,6 +38,7 @@ export async function checkProfileExists(token, user_id) {
  * @returns {Promise<object|null>} User profile data or null if error
  */
 export async function getProfile(token, { user_id }) {
+  // console.log("Fetching profile for user:", user_id);
   const supabase = await supabaseClient(token);
   const { data, error } = await supabase
     .from("profiles")
@@ -39,10 +47,17 @@ export async function getProfile(token, { user_id }) {
     .single();
 
   if (error) {
-    console.error("Error fetching profile:", error);
+    console.error(
+      "Error fetching profile:",
+      error.message,
+      error.code,
+      error.details,
+      error.hint,
+    );
     return null;
   }
 
+  // console.log("Fetched profile data:", data);
   return data;
 }
 
@@ -58,12 +73,20 @@ export async function upsertProfile(token, _, profileData) {
   const supabase = await supabaseClient(token);
   const { data, error } = await supabase
     .from("profiles")
-    .upsert([profileData])
+    .upsert([profileData], {
+      onConflict: "user_id",
+      ignoreDuplicates: false,
+    })
     .select();
 
   if (error) {
-    console.error("Error saving profile:", error);
-    throw new Error("Error saving profile");
+    console.error(
+      "Error saving profile:",
+      error.message,
+      error.details,
+      error.hint,
+    );
+    throw new Error(`Error saving profile: ${error.message}`);
   }
 
   return data;
@@ -96,6 +119,12 @@ export async function updateProfile(token, { user_id }, updates) {
 
 export async function createProfile(token, profileData) {
   const supabase = await supabaseClient(token);
+
+  // Ensure user_id is present
+  if (!profileData.user_id) {
+    throw new Error("user_id is required to create a profile");
+  }
+
   const { data, error } = await supabase
     .from("profiles")
     .insert([profileData])
@@ -103,8 +132,19 @@ export async function createProfile(token, profileData) {
     .single();
 
   if (error) {
-    console.error("Error creating profile:", error);
-    throw new Error("Error creating profile");
+    console.error(
+      "Error creating profile:",
+      error.message,
+      error.details,
+      error.hint,
+      error.code,
+    );
+    // If duplicate key error, try upsert instead
+    if (error.code === "23505") {
+      console.log("Profile already exists, attempting upsert instead...");
+      return upsertProfile(token, null, profileData);
+    }
+    throw new Error(`Error creating profile: ${error.message}`);
   }
 
   return data;
@@ -160,7 +200,7 @@ export async function uploadExperienceLogo(token, _, { company_name, file }) {
     throw new Error("Error uploading company logo");
   }
 
-  const logo_url = `${supabaseUrl}/storage/v1/object/public/experience-logos/${fileName}`;
+  const logo_url = `${supabaseUrl}/storage/v1/object/public/company-logo/${fileName}`;
   return logo_url;
 }
 
@@ -246,11 +286,49 @@ export async function uploadProfilePicture(token, _, { user_id, file }) {
     });
 
   if (storageError) {
-    console.error("Error uploading profile picture:", storageError);
-    throw new Error("Error uploading profile picture");
+    console.error(
+      "Error uploading profile picture:",
+      storageError.message,
+      storageError,
+    );
+    throw new Error(`Error uploading profile picture: ${storageError.message}`);
   }
 
   const profile_pic_url = `${supabaseUrl}/storage/v1/object/public/profile-pictures/${fileName}`;
+
+  // Also update the profile with the new picture URL immediately
+  // Use upsert to handle both new and existing profiles
+  try {
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          user_id,
+          profile_pic_url,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: "user_id",
+          ignoreDuplicates: false,
+        },
+      )
+      .select();
+
+    if (updateError) {
+      console.warn(
+        "Could not auto-save profile picture URL:",
+        updateError.message,
+        updateError.code,
+        updateError.details,
+      );
+      // Don't throw - the upload succeeded, user can manually save
+    } else {
+      console.log("Profile picture URL auto-saved to database");
+    }
+  } catch (e) {
+    console.warn("Could not auto-save profile picture URL:", e);
+  }
+
   return profile_pic_url;
 }
 

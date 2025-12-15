@@ -191,11 +191,15 @@ const ProfilePage = () => {
         updated_at: new Date().toISOString(),
       };
 
+      console.log("Saving profile data:", profileData);
+
       if (profileExists) {
-        await upsertProfile(token, null, profileData);
+        const result = await upsertProfile(token, null, profileData);
+        console.log("Upsert result:", result);
         setMessage({ text: "Profile updated successfully!", type: "success" });
       } else {
-        await createProfile(token, profileData);
+        const result = await createProfile(token, profileData);
+        console.log("Create result:", result);
         setProfileExists(true);
         setMessage({ text: "Profile created successfully!", type: "success" });
       }
@@ -204,7 +208,10 @@ const ProfilePage = () => {
       setTimeout(() => setMessage({ text: "", type: "" }), 3000);
     } catch (error) {
       console.error("Error saving profile:", error);
-      setMessage({ text: "Failed to save profile", type: "error" });
+      setMessage({
+        text: error.message || "Failed to save profile",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
@@ -236,13 +243,16 @@ const ProfilePage = () => {
       });
       setProfilePicUrl(url);
       setMessage({
-        text: "Profile picture uploaded successfully!",
+        text: "Profile picture uploaded and saved!",
         type: "success",
       });
       setTimeout(() => setMessage({ text: "", type: "" }), 3000);
     } catch (error) {
       console.error("Error uploading profile picture:", error);
-      setMessage({ text: "Failed to upload profile picture", type: "error" });
+      setMessage({
+        text: error.message || "Failed to upload profile picture",
+        type: "error",
+      });
     } finally {
       setProfilePicUploading(false);
     }
