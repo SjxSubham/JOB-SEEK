@@ -14,11 +14,13 @@ dist-ssr
 .env
 
 # files
-profile-page.jsx
-apiProfile.js
+
+# profile-page.jsx
+# apiProfile.js
+
 apiRecommendations.js
 /assets
-
+PROJECT_CONCEPT.md
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

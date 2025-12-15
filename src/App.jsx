@@ -11,9 +11,9 @@ import JobListing from "./pages/jobListing";
 import MyJobs from "./pages/my-jobs";
 import SavedJobs from "./pages/saved-jobs";
 import JobPage from "./pages/job";
+import ProfilePage from "./pages/profile-page";
 
 import "./App.css";
-
 
 const router = createBrowserRouter([
   {
@@ -71,14 +71,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      // {
-      //   path: "/profile-page",
-      //   element: (
-      //     <ProtectedRoute>
-      //       <PageForm />
-      //     </ProtectedRoute>
-      //   ),
-      // },
+      {
+        path: "/profile-page",
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);

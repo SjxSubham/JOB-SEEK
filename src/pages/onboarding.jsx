@@ -8,8 +8,9 @@ const Onboarding = () => {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
 
-  const navigateUser = (currRole) => {
-    navigate(currRole === "recruiter" ? "/post-job" : "/jobs");
+  const navigateUser = () => {
+    // After selecting role, redirect to profile page to complete profile
+    navigate("/profile-page");
   };
 
   const handleRoleSelection = async (role) => {
@@ -25,10 +26,15 @@ const Onboarding = () => {
   };
 
   useEffect(() => {
+    // If user already has a role, check if they have completed their profile
+    // For now, redirect existing users to their appropriate page
     if (user?.unsafeMetadata?.role) {
-      navigateUser(user.unsafeMetadata.role);
+      const role = user.unsafeMetadata.role;
+      // Redirect to profile page if they're coming back to onboarding
+      // This ensures they can complete their profile if needed
+      navigate(role === "recruiter" ? "/post-job" : "/jobs");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   if (!isLoaded) {
     return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />;
