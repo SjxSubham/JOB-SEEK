@@ -50,7 +50,7 @@ export async function getSingleJob(token, { job_id }) {
   let query = supabase
     .from("jobs")
     .select(
-      "*, company: companies(name,logo_url), applications: applications(*)"
+      "*, company: companies(name,logo_url), applications: applications(*)",
     )
     .eq("id", job_id)
     .single();
@@ -66,7 +66,7 @@ export async function getSingleJob(token, { job_id }) {
 }
 
 // - Add / Remove Saved Job
-export async function saveJob(token, { alreadySaved }, saveData) {
+export async function saveJob(token, _, { alreadySaved }, saveData) {
   const supabase = await supabaseClient(token);
 
   if (alreadySaved) {

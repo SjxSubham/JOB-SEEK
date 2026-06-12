@@ -8,8 +8,18 @@ import {
   useUser,
 } from "@clerk/clerk-react";
 import { Button } from "./ui/button";
-import { BriefcaseBusiness, CornerLeftUp, Heart, PenBox, Shell, Sparkles, User } from "lucide-react";
+import {
+  Brain,
+  BriefcaseBusiness,
+  CornerLeftUp,
+  Heart,
+  PenBox,
+  Shell,
+  Sparkles,
+  User,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import NotificationBell from "./notification-bell";
 
 const Header = () => {
   const [showSignIn, setShowSignIn] = useState(false);
@@ -37,14 +47,20 @@ const Header = () => {
     };
   }, [showSignIn]);
 
-  const navigationLinks = useMemo(
-    () => [
+  const navigationLinks = useMemo(() => {
+    const links = [
       { label: "Discover", path: "/jobs" },
       { label: "My Jobs", path: "/my-jobs" },
       { label: "Saved", path: "/saved-jobs" },
-    ],
-    [],
-  );
+    ];
+
+    // Add AI Recommendations for candidates only
+    if (user?.unsafeMetadata?.role !== "recruiter") {
+      links.push({ label: "AI Jobs", path: "/ai-recommendations", isAI: true });
+    }
+
+    return links;
+  }, [user?.unsafeMetadata?.role]);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -53,7 +69,7 @@ const Header = () => {
     }
   };
 
-  const renderNavLink = ({ path, label }) => (
+  const renderNavLink = ({ path, label, isAI }) => (
     <NavLink
       key={path}
       to={path}
@@ -62,6 +78,8 @@ const Header = () => {
           "group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition duration-300",
           "hover:text-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60",
           isActive ? "text-sky-200" : "text-slate-400/90",
+          isAI &&
+            "bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30",
         )
       }
     >
@@ -71,7 +89,9 @@ const Header = () => {
           "group-hover:opacity-100",
         )}
       />
+      {isAI && <Brain size={14} className="text-purple-400" />}
       {label}
+      {isAI && <Sparkles size={12} className="text-cyan-400" />}
     </NavLink>
   );
 
@@ -124,6 +144,7 @@ const Header = () => {
                   </Button>
                 </Link>
               )}
+              <NotificationBell />
               <UserButton
                 appearance={{
                   elements: {
@@ -147,6 +168,13 @@ const Header = () => {
                     labelIcon={<User size={15} />}
                     href="/profile-page"
                   />
+                  {user?.unsafeMetadata?.role !== "recruiter" && (
+                    <UserButton.Link
+                      label="AI Recommendations"
+                      labelIcon={<Brain size={15} />}
+                      href="/ai-recommendations"
+                    />
+                  )}
                   <UserButton.Action label="manageAccount" />
                 </UserButton.MenuItems>
               </UserButton>

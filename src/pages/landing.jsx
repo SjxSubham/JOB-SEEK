@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import TextType from "@/components/ui/TextType";
+import OrbitSphere from "@/components/ui/OrbitSphere";
 import companies from "@/data/companies.json";
 import faqs from "@/data/faq.json";
 
@@ -108,6 +109,7 @@ const LandingPage = () => {
   return (
     <main className="flex flex-col gap-20 py-12 sm:py-20">
       <section className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/5 px-6 py-16 text-center text-white shadow-[0_48px_120px_-60px_rgba(12,15,45,0.8)] backdrop-blur-2xl sm:px-12 lg:px-20">
+        <OrbitSphere className="opacity-60" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,var(--app-aurora-a)_0%,transparent_55%)] opacity-70" />
         <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6">
           {/* <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-900/60 px-4 py-2 text-xs font-medium uppercase tracking-[0.3em] text-slate-200">

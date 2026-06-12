@@ -43,10 +43,15 @@ const JobCard = ({
   } = useFetch(saveJob);
 
   const handleSaveJob = async () => {
-    await fnSavedJob({
-      user_id: user.id,
-      job_id: job.id,
-    });
+    await fnSavedJob(
+      {
+        alreadySaved: saved,
+      },
+      {
+        user_id: user.id,
+        job_id: job.id,
+      },
+    );
     onJobAction();
   };
 
@@ -167,7 +172,7 @@ const JobCard = ({
           >
             <Heart
               size={18}
-              className={saved ? "fill-sky-300 text-sky-300" : "text-slate-100"}
+              className={saved ? "fill-red-600 text-red-900" : "text-slate-100"}
             />
             <span className="text-sm font-semibold">
               {saved ? "Saved" : "Save"}

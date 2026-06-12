@@ -200,7 +200,7 @@ export async function uploadExperienceLogo(token, _, { company_name, file }) {
     throw new Error("Error uploading company logo");
   }
 
-  const logo_url = `${supabaseUrl}/storage/v1/object/public/company-logo/${fileName}`;
+  const logo_url = `${supabaseUrl}/storage/v1/object/public/experience-logos/${fileName}`;
   return logo_url;
 }
 

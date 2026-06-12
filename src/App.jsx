@@ -12,6 +12,7 @@ import MyJobs from "./pages/my-jobs";
 import SavedJobs from "./pages/saved-jobs";
 import JobPage from "./pages/job";
 import ProfilePage from "./pages/profile-page";
+import AIRecommendationsPage from "./pages/ai-recommendations";
 
 import "./App.css";
 
@@ -76,6 +77,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/ai-recommendations",
+        element: (
+          <ProtectedRoute>
+            <AIRecommendationsPage />
           </ProtectedRoute>
         ),
       },

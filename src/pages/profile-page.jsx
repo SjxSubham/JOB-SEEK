@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useUser, useSession } from "@clerk/clerk-react";
 import { BarLoader } from "react-spinners";
 import { useForm } from "react-hook-form";
@@ -21,6 +22,7 @@ import {
   CheckCircle,
   AlertCircle,
   Camera,
+  Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -47,12 +49,16 @@ import {
   getProfile,
   upsertProfile,
   createProfile,
-  uploadResume,
   uploadExperienceLogo,
   uploadPortfolioItem,
   uploadCertification,
   uploadProfilePicture,
 } from "@/api/apiProfile";
+
+import {
+  uploadAndProcessResume,
+  RESUME_ERRORS,
+} from "@/api/apiResumeAI";
 
 // Validation schema for basic info
 const basicInfoSchema = z.object({
@@ -87,6 +93,8 @@ const ProfilePage = () => {
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [resumeUrl, setResumeUrl] = useState("");
   const [resumeUploading, setResumeUploading] = useState(false);
+  const [isParsingResume, setIsParsingResume] = useState(false);
+  const [parsedResumeData, setParsedResumeData] = useState(null);
   const [profilePicUrl, setProfilePicUrl] = useState("");
   const [profilePicUploading, setProfilePicUploading] = useState(false);
 
@@ -265,16 +273,65 @@ const ProfilePage = () => {
 
     try {
       setResumeUploading(true);
+      setIsParsingResume(true);
+      setMessage({ text: "Analyzing your resume with AI...", type: "info" });
+
       const token = await session.getToken({ template: "supabase" });
-      const url = await uploadResume(token, null, { user_id: user.id, file });
-      setResumeUrl(url);
-      setMessage({ text: "Resume uploaded successfully!", type: "success" });
-      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+
+      // Use AI parsing service
+      const result = await uploadAndProcessResume(token, null, {
+        user_id: user.id,
+        file,
+        profileData: { skills }, // Pass current skills for merging
+      });
+
+      if (result.success) {
+        setResumeUrl(result.resumeUrl);
+        setParsedResumeData(result.parsedResume);
+
+        // Auto-populate skills if found
+        if (result.parsedResume.skills && result.parsedResume.skills.length > 0) {
+          const mergedSkills = [
+            ...new Set([...skills, ...result.parsedResume.skills]),
+          ];
+          setSkills(mergedSkills);
+          setMessage({
+            text: `Resume parsed successfully! ${result.parsedResume.skills.length} skills detected and added.`,
+            type: "success",
+          });
+        } else {
+          setMessage({
+            text: "Resume uploaded, but no clear skills were detected for auto-population.",
+            type: "success",
+          });
+        }
+
+        // Auto-populate location if empty
+        if (result.parsedResume.location && !watch("location")) {
+          setValue("location", result.parsedResume.location);
+        }
+      } else {
+        // Handle specific AI parsing errors
+        if (result.error?.code === RESUME_ERRORS.NO_SKILLS) {
+          setMessage({
+            text: "AI Analysis: This doesn't appear to be a valid resume or no skills were detected. Please ensure your resume is clear and contains a skills section.",
+            type: "error",
+          });
+        } else {
+          setMessage({
+            text: result.error?.message || "Failed to process resume with AI",
+            type: "error",
+          });
+        }
+      }
+
+      setTimeout(() => setMessage({ text: "", type: "" }), 5000);
     } catch (error) {
       console.error("Error uploading resume:", error);
-      setMessage({ text: "Failed to upload resume", type: "error" });
+      setMessage({ text: "Failed to upload and analyze resume", type: "error" });
     } finally {
       setResumeUploading(false);
+      setIsParsingResume(false);
     }
   };
 
@@ -585,52 +642,100 @@ const ProfilePage = () => {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Profile Picture */}
-              <div className="flex items-center gap-6">
-                <div className="relative group">
-                  <img
-                    src={profilePicUrl || user.imageUrl}
-                    alt="Profile"
-                    className="w-24 h-24 rounded-full border-2 border-sky-500 object-cover"
-                  />
-                  <label
-                    className={`absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity ${
-                      profilePicUploading ? "opacity-100" : ""
-                    }`}
-                  >
-                    {profilePicUploading ? (
-                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
-                    ) : (
-                      <Camera className="w-6 h-6 text-white" />
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleProfilePicUpload}
-                      disabled={profilePicUploading}
+              <div className="flex flex-col sm:flex-row items-start gap-6">
+                <div className="flex items-center gap-6">
+                  <div className="relative group">
+                    <img
+                      src={profilePicUrl || user.imageUrl}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full border-2 border-sky-500 object-cover"
                     />
-                  </label>
+                    <label
+                      className={`absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity ${
+                        profilePicUploading ? "opacity-100" : ""
+                      }`}
+                    >
+                      {profilePicUploading ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                      ) : (
+                        <Camera className="w-6 h-6 text-white" />
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfilePicUpload}
+                        disabled={profilePicUploading}
+                      />
+                    </label>
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-lg">
+                      {user.fullName}
+                    </p>
+                    <p className="text-slate-400 text-sm">
+                      {user.primaryEmailAddress?.emailAddress}
+                    </p>
+                    <span
+                      className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${
+                        userRole === "recruiter"
+                          ? "bg-red-500/20 text-red-300"
+                          : "bg-blue-500/20 text-blue-300"
+                      }`}
+                    >
+                      {userRole === "recruiter" ? "Recruiter" : "Candidate"}
+                    </span>
+                    <p className="text-slate-500 text-xs mt-2">
+                      Hover over picture to change
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-white font-medium text-lg">
-                    {user.fullName}
-                  </p>
-                  <p className="text-slate-400 text-sm">
-                    {user.primaryEmailAddress?.emailAddress}
-                  </p>
-                  <span
-                    className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${
-                      userRole === "recruiter"
-                        ? "bg-red-500/20 text-red-300"
-                        : "bg-blue-500/20 text-blue-300"
-                    }`}
-                  >
-                    {userRole === "recruiter" ? "Recruiter" : "Candidate"}
-                  </span>
-                  <p className="text-slate-500 text-xs mt-2">
-                    Hover over picture to change
-                  </p>
-                </div>
+
+                {/* Profile Picture Preview Card */}
+                {profilePicUrl && (
+                  <div className="flex-1 p-4 bg-slate-800/70 rounded-lg border border-white/10">
+                    <p className="text-xs text-slate-400 mb-3">
+                      Profile Picture Preview:
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <div className="relative group">
+                        <img
+                          src={profilePicUrl}
+                          alt="Profile Preview"
+                          className="w-20 h-20 rounded-lg object-cover border border-white/10"
+                        />
+                        <a
+                          href={profilePicUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg"
+                        >
+                          <ExternalLink className="w-5 h-5 text-white" />
+                        </a>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm text-white">
+                          Custom profile photo
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">
+                            <CheckCircle className="w-3 h-3" />
+                            Uploaded
+                          </span>
+                          <a
+                            href={profilePicUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            View Full
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -758,13 +863,17 @@ const ProfilePage = () => {
 
               {/* Resume Upload - Only for candidates */}
               {userRole === "candidate" && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Label>Resume / CV</Label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-wrap items-center gap-4">
                     <label className="flex items-center gap-2 px-4 py-2 bg-slate-800 border border-white/20 rounded-lg cursor-pointer hover:bg-slate-700 transition">
                       <Upload className="w-4 h-4" />
                       <span>
-                        {resumeUploading ? "Uploading..." : "Upload Resume"}
+                        {resumeUploading
+                          ? "Uploading..."
+                          : resumeUrl
+                            ? "Change Resume"
+                            : "Upload Resume"}
                       </span>
                       <input
                         type="file"
@@ -781,15 +890,125 @@ const ProfilePage = () => {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-sky-400 hover:text-sky-300"
                       >
-                        <FileText className="w-4 h-4" />
-                        View Resume
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className="w-4 h-4" />
+                        Open in New Tab
                       </a>
                     )}
                   </div>
                   <p className="text-slate-500 text-sm">
                     Accepted formats: PDF, DOC, DOCX
                   </p>
+
+                  {/* AI Parsing Progress */}
+                  {isParsingResume && (
+                    <div className="mt-4 p-6 rounded-2xl bg-sky-500/5 border border-sky-500/20 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(56,189,248,0.1),transparent_70%)]" />
+                      <div className="relative flex flex-col gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400">
+                            <Sparkles className="h-5 w-5 animate-pulse" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-white">AI is scanning your resume...</h4>
+                            <p className="text-xs text-slate-400">Extracting skills, experience, and key data points</p>
+                          </div>
+                        </div>
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                          <motion.div
+                            className="h-full bg-gradient-to-r from-sky-500 to-cyan-400 shadow-[0_0_12px_rgba(56,189,248,0.5)]"
+                            initial={{ width: "0%" }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 4, ease: "easeInOut" }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+                          <span>Reading Text</span>
+                          <span>Detecting Skills</span>
+                          <span>Mapping Career Path</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* AI Analysis Result Card */}
+                  {parsedResumeData && !isParsingResume && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-500/5 backdrop-blur-sm"
+                    >
+                      <div className="flex items-center gap-2 bg-emerald-500/10 px-4 py-2 border-b border-emerald-500/20">
+                        <CheckCircle className="h-4 w-4 text-emerald-400" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">AI Analysis Complete</span>
+                        <button
+                          type="button"
+                          onClick={() => setParsedResumeData(null)}
+                          className="ml-auto text-slate-400 hover:text-white"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          <div className="space-y-1">
+                            <p className="text-[10px] uppercase font-bold text-slate-500">Extracted Name</p>
+                            <p className="text-sm text-white font-medium">{parsedResumeData.name || "Not detected"}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[10px] uppercase font-bold text-slate-500">Contact Info</p>
+                            <p className="text-sm text-slate-300">{parsedResumeData.email || parsedResumeData.phone || "Not detected"}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[10px] uppercase font-bold text-slate-500">Detected Experience</p>
+                            <p className="text-sm text-white">{parsedResumeData.yearsOfExperience} years estimated</p>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <p className="text-[10px] uppercase font-bold text-slate-500">Top Skills Found</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {parsedResumeData.skills?.slice(0, 8).map((skill, i) => (
+                              <span key={i} className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-md border border-emerald-500/20">
+                                {skill}
+                              </span>
+                            ))}
+                            {parsedResumeData.skills?.length > 8 && (
+                              <span className="text-[10px] text-slate-500 font-bold">+{parsedResumeData.skills.length - 8} more</span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-400 italic mt-2">Skills have been automatically added to your profile.</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Resume Preview */}
+                  {resumeUrl && (
+                    <div className="mt-3 p-4 bg-slate-800/70 rounded-lg border border-white/10">
+                      <p className="text-xs text-slate-400 mb-3">
+                        Uploaded Resume:
+                      </p>
+                      <div className="flex items-center gap-4 p-3 bg-slate-900/50 rounded-lg">
+                        <div className="w-14 h-14 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-lg flex items-center justify-center border border-red-500/30">
+                          <FileText className="w-7 h-7 text-red-400" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-white font-medium truncate">
+                            {resumeUrl.split("/").pop() || "Resume.pdf"}
+                          </p>
+                          <p className="text-xs text-slate-400">PDF Document</p>
+                        </div>
+                        <a
+                          href={resumeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-sky-500/20 text-sky-400 rounded-lg text-sm hover:bg-sky-500/30 transition flex items-center gap-2 shrink-0"
+                        >
+                          <FileText className="w-4 h-4" />
+                          View
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -1139,12 +1358,14 @@ const ProfilePage = () => {
                   </div>
 
                   {/* Certificate File Upload */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label>Upload Certificate</Label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                       <label className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-white/20 rounded-lg cursor-pointer hover:bg-slate-800 transition">
                         <Upload className="w-4 h-4" />
-                        <span>Upload File</span>
+                        <span>
+                          {cert.file_url ? "Change File" : "Upload File"}
+                        </span>
                         <input
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png"
@@ -1164,12 +1385,63 @@ const ProfilePage = () => {
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 text-sky-400 hover:text-sky-300"
                         >
-                          <FileText className="w-4 h-4" />
-                          View Certificate
-                          <ExternalLink className="w-3 h-3" />
+                          <ExternalLink className="w-4 h-4" />
+                          Open in New Tab
                         </a>
                       )}
                     </div>
+
+                    {/* Certificate Preview */}
+                    {cert.file_url && (
+                      <div className="mt-3 p-3 bg-slate-800/70 rounded-lg border border-white/10">
+                        <p className="text-xs text-slate-400 mb-2">
+                          Certificate Preview:
+                        </p>
+                        {cert.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                          <div className="relative group">
+                            <img
+                              src={cert.file_url}
+                              alt={cert.name || "Certificate"}
+                              className="max-w-full max-h-48 rounded-lg object-contain border border-white/10"
+                            />
+                            <a
+                              href={cert.file_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg"
+                            >
+                              <span className="text-white flex items-center gap-2">
+                                <ExternalLink className="w-5 h-5" />
+                                View Full Size
+                              </span>
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3 p-3 bg-slate-900/50 rounded-lg">
+                            <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+                              <FileText className="w-6 h-6 text-red-400" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm text-white font-medium">
+                                {cert.name || "Certificate"}.pdf
+                              </p>
+                              <p className="text-xs text-slate-400">
+                                PDF Document
+                              </p>
+                            </div>
+                            <a
+                              href={cert.file_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-sky-500/20 text-sky-400 rounded-lg text-sm hover:bg-sky-500/30 transition flex items-center gap-1"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              View
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1334,12 +1606,14 @@ const ProfilePage = () => {
                   </div>
 
                   {/* Company Logo Upload */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label>Company Logo</Label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                       <label className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-white/20 rounded-lg cursor-pointer hover:bg-slate-800 transition">
                         <Upload className="w-4 h-4" />
-                        <span>Upload Logo</span>
+                        <span>
+                          {exp.company_logo_url ? "Change Logo" : "Upload Logo"}
+                        </span>
                         <input
                           type="file"
                           accept="image/*"
@@ -1352,6 +1626,31 @@ const ProfilePage = () => {
                           }
                         />
                       </label>
+
+                      {/* Logo Preview */}
+                      {exp.company_logo_url && (
+                        <div className="flex items-center gap-3 p-2 bg-slate-800/70 rounded-lg border border-white/10">
+                          <img
+                            src={exp.company_logo_url}
+                            alt={exp.company_name || "Company Logo"}
+                            className="w-16 h-16 rounded-lg object-contain bg-white/5 p-1"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xs text-slate-400">
+                              Logo uploaded
+                            </span>
+                            <a
+                              href={exp.company_logo_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              View Full
+                            </a>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1492,12 +1791,14 @@ const ProfilePage = () => {
                   </div>
 
                   {/* Project Image Upload */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label>Project Image/Screenshot</Label>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                       <label className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-white/20 rounded-lg cursor-pointer hover:bg-slate-800 transition">
                         <Upload className="w-4 h-4" />
-                        <span>Upload Image</span>
+                        <span>
+                          {item.image_url ? "Change Image" : "Upload Image"}
+                        </span>
                         <input
                           type="file"
                           accept="image/*"
@@ -1510,7 +1811,46 @@ const ProfilePage = () => {
                           }
                         />
                       </label>
+
+                      {item.image_url && (
+                        <a
+                          href={item.image_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-sky-400 hover:text-sky-300 text-sm"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Open in New Tab
+                        </a>
+                      )}
                     </div>
+
+                    {/* Portfolio Image Preview */}
+                    {item.image_url && (
+                      <div className="mt-3 p-3 bg-slate-800/70 rounded-lg border border-white/10">
+                        <p className="text-xs text-slate-400 mb-2">
+                          Project Screenshot:
+                        </p>
+                        <div className="relative group">
+                          <img
+                            src={item.image_url}
+                            alt={item.title || "Project Screenshot"}
+                            className="max-w-full max-h-64 rounded-lg object-contain border border-white/10"
+                          />
+                          <a
+                            href={item.image_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg"
+                          >
+                            <span className="text-white flex items-center gap-2">
+                              <ExternalLink className="w-5 h-5" />
+                              View Full Size
+                            </span>
+                          </a>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">

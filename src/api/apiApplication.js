@@ -14,7 +14,7 @@ export async function applyToJob(token, _, jobData) {
   if (storageError) throw new Error("Error uploading Resume");
 
   const resume = `${supabaseUrl}/storage/v1/object/public/resumes/${fileName}`;
-  
+
   const { data, error } = await supabase
     .from("applications")
     .insert([
@@ -34,17 +34,43 @@ export async function applyToJob(token, _, jobData) {
 }
 
 // - Edit Application Status ( recruiter )
-export async function updateApplicationStatus(token, { job_id }, status) {
+const VALID_STATUSES = ["applied", "interviewing", "hired", "rejected"];
+
+export async function updateApplicationStatus(
+  token,
+  { application_id },
+  status,
+) {
+  // Validate status
+  if (!status || !VALID_STATUSES.includes(status)) {
+    console.error("Invalid status value:", status);
+    throw new Error(
+      `Invalid status: ${status}. Must be one of: ${VALID_STATUSES.join(", ")}`,
+    );
+  }
+
+  if (!application_id) {
+    console.error("Missing application_id");
+    throw new Error("Application ID is required");
+  }
+
   const supabase = await supabaseClient(token);
   const { data, error } = await supabase
     .from("applications")
     .update({ status })
-    .eq("job_id", job_id)
+    .eq("id", application_id)
     .select();
 
-  if (error || data.length === 0) {
+  if (error) {
     console.error("Error Updating Application Status:", error);
-    return null;
+    throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    console.error("No application found with id:", application_id);
+    throw new Error(
+      "Application not found or you don't have permission to update it",
+    );
   }
 
   return data;
