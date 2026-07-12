@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Briefcase,
   Building,
@@ -19,6 +19,7 @@ import {
   XCircle,
   AlertCircle,
   Loader2,
+  Video,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -38,6 +39,7 @@ import {
 import { cn } from "@/lib/utils";
 import useFetch from "@/hooks/use-fetch";
 import { updateApplicationStatus } from "@/api/apiApplication";
+import { scheduleInterview } from "@/api/apiInterview";
 import {
   APPLICATION_STATUSES,
   STATUS_CONFIG,
@@ -196,6 +198,15 @@ const ApplicationCardEnhanced = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
+  const navigate = useNavigate();
+
+  const {
+    loading: loadingSchedule,
+    fn: fnScheduleInterview,
+  } = useFetch(scheduleInterview, { application_id: application.id });
 
   const { loading: loadingStatus, fn: fnUpdateStatus } = useFetch(
     updateApplicationStatus,
@@ -399,6 +410,23 @@ const ApplicationCardEnhanced = ({
               {Math.round(application.match_score)}% match
             </span>
           )}
+
+          {/* Interview info */}
+          {application.interview_scheduled_at && (
+            <span className="flex items-center gap-1 font-medium text-cyan-400">
+              <Video className="h-3.5 w-3.5" />
+              Interview:{" "}
+              {new Date(application.interview_scheduled_at).toLocaleString(
+                "en-US",
+                {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                }
+              )}
+            </span>
+          )}
         </div>
 
         {/* Expandable Details */}
@@ -447,6 +475,110 @@ const ApplicationCardEnhanced = ({
                 </p>
               </div>
             )}
+          </div>
+        )}
+        {/* Interview Actions */}
+        {application.interview_scheduled_at && (
+          <button
+            onClick={() => navigate(`/interview/${application.id}`)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-500/25 transition-all hover:shadow-sky-500/40 hover:brightness-110"
+          >
+            <Video className="h-4 w-4" />
+            Join Interview
+          </button>
+        )}
+
+        {/* Schedule Interview Button (Recruiter only) */}
+        {!isCandidate &&
+          !application.interview_scheduled_at &&
+          ["shortlisted", "interviewing", "under_review", "applied"].includes(
+            application.status
+          ) && (
+            <button
+              onClick={() => setShowScheduleModal(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-400 transition-all hover:bg-sky-500/20"
+            >
+              <Calendar className="h-4 w-4" />
+              Schedule Interview
+            </button>
+          )}
+
+        {/* Schedule Interview Modal */}
+        {showScheduleModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl">
+              <h3 className="mb-1 text-lg font-semibold text-white">
+                Schedule Interview
+              </h3>
+              <p className="mb-5 text-sm text-slate-400">
+                Pick a date and time for the interview with{" "}
+                <span className="text-slate-300">
+                  {application.name || "the candidate"}
+                </span>
+              </p>
+
+              <div className="mb-4 space-y-3">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-400">
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    value={scheduleDate}
+                    onChange={(e) => setScheduleDate(e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-2.5 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    min={new Date().toISOString().split("T")[0]}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-slate-400">
+                    Time
+                  </label>
+                  <input
+                    type="time"
+                    value={scheduleTime}
+                    onChange={(e) => setScheduleTime(e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-slate-800 px-4 py-2.5 text-sm text-white outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowScheduleModal(false)}
+                  className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/10"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!scheduleDate || !scheduleTime) return;
+                    const scheduledAt = new Date(
+                      `${scheduleDate}T${scheduleTime}`
+                    ).toISOString();
+                    try {
+                      await fnScheduleInterview(scheduledAt);
+                      setShowScheduleModal(false);
+                      if (onStatusChange) {
+                        onStatusChange(application.id, "interviewing");
+                      }
+                    } catch (err) {
+                      console.error("Schedule error:", err);
+                    }
+                  }}
+                  disabled={
+                    !scheduleDate || !scheduleTime || loadingSchedule
+                  }
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-50"
+                >
+                  {loadingSchedule ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Confirm"
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
